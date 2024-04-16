@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  server-socket:
+    image: server-socket:latest
+    ports:
+      - "8014:8014"
+    volumes:
+      - .:/home/app
+    depends_on:
+      - socket-server-mysql
+
+  socket-server-mysql:
+    image: mysql:8.0.30
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=52647654327
+      - MYSQL_DATABASE=socket_server
+      - MYSQL_USER=anthony
+      - MYSQL_PASSWORD=459642370786
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./db.sql:/docker-entrypoint-initdb.d/db.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  socket-client:
+    image: client-socket:latest
+    ports:
+      - "8015:8015"
+    depends_on:
+      - server-socket
+
+volumes:
+  mysql-data:
+
+
+
